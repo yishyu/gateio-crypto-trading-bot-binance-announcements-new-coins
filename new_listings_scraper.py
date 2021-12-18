@@ -16,6 +16,7 @@ from auth.gateio_auth import *
 from logger import logger
 from store_order import *
 from load_config import *
+import datetime
 
 config = load_config('config.yml')
 client = load_gateio_creds('auth/auth.yml')
@@ -25,6 +26,9 @@ global supported_currencies
 
 previously_found_coins = set()
 
+def unix_time_millis(dt):
+    epoch = datetime.datetime.utcfromtimestamp(0)
+    return (dt - epoch).total_seconds() * 1000.0
 
 def get_announcement():
     """
@@ -43,6 +47,7 @@ def get_announcement():
     logger.debug(f"Queries: {queries}")
     request_url = f"https://www.binancezh.com/gateway-api/v1/public/cms/article/list/query" \
                   f"?{queries[0]}&{queries[1]}&{queries[2]}&{queries[3]}&{queries[4]}&{queries[5]}"
+    
     latest_announcement = requests.get(request_url)
     try:
         logger.debug(f'X-Cache: {latest_announcement.headers["X-Cache"]}')
@@ -52,6 +57,8 @@ def get_announcement():
 
     latest_announcement = latest_announcement.json()
     logger.debug("Finished pulling announcement page")
+    print(request_url)
+    print(len(latest_announcement['data']['catalogs'][0]['articles']))
     return latest_announcement['data']['catalogs'][0]['articles'][0]['title']
 
 

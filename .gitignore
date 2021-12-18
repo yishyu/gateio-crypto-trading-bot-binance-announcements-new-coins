@@ -26,7 +26,7 @@ config.yml
 test_order.py
 
 # Ignore virtual environment
-venv/
+ve/
 
 .idea/
 
